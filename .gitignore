@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,3 +128,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+=======
+secrets.toml
+>>>>>>> 9158ba8 (Load data from AWS S3)
