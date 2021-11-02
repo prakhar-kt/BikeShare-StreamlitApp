@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import boto3
 import os
 
 
@@ -27,6 +28,12 @@ st.title('BikeShare Analysis')
 # for line in content.strip().split("\n"):
 #     name, pet = line.split(",")
 #     st.write(f"{name} has a :{pet}:")
+s3 = boto3.resource(
+    service_name='s3',
+    region_name='us-east-2',
+    aws_access_key_id='AWS_ACCESS_KEY_ID',
+    aws_secret_access_key='AWS_SECRET_ACCESS_KEY'
+)
 
 DATA_URL = ('https://my-streamlit-app-bucket.s3.us-east-2.amazonaws.com/cleaned_df.csv')
 
