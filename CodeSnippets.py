@@ -1,24 +1,4 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import boto3
-import altair as alt
-import json
-import requests
-import random
-import os
-import CodeSnippets
-
-
-
-'''
-# $~~~~~$ BikeShare Ride Analysis App 
-This is a very simple app that allows to see some visualisations about a BikeShare Company operating in Chicago , which showcase how the 
-members and non-members differ in their riding patterns.
-'''
-
-#https://towardsdatascience.com/reading-and-writing-files-from-to-amazon-s3-with-pandas-ccaf90bfe86c
-
+code_snippet_data = '''
 # store the AWS access keys from the secrets file into variables
 ACCESS_KEY = st.secrets['AWS_ACCESS_KEY_ID']
 SECRET_KEY = st.secrets['AWS_SECRET_ACCESS_KEY']
@@ -34,8 +14,7 @@ dayOfWeek={0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'
 # function to load data into a pandas dataframe and apply some trasnformations that will be required later.
 @st.cache(allow_output_mutation=True)
 def load_data():
-    '''Loads the data from the response object from S3 bucket
-    into a dataframe and applies some transformations'''
+    
 
     df = pd.read_csv(response.get('Body'))
 
@@ -70,26 +49,13 @@ df = load_data()
 # Notify the reader that the data was successfully loaded.
 data_load_state.text('Loading data...done!')
 
-if st.sidebar.checkbox('Show dataframe'):
+# if checkbox is selected, display data 
+if st.checkbox('Show dataframe'):
     st.write(df)
 
-
-
-if st.sidebar.checkbox('Show Code for loading data'):
-    st.code(CodeSnippets.code_snippet_data,language='python')
-
-
-
-
-'''
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$
-### $~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$ Location Map 
-$~~~~~~~~~~~~~~~~~$This map shows the locations in Chicago from where the rides were started 
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$with different markers for members and non-members
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$
 '''
 
+code_snippet_map = '''
 # Chicago.geojson file was obtained from "https://opendata.arcgis.com/datasets/bfe6977cfd574c2b894cd67cf6a787c3_2.geojson"
 # Load the geojson file into a json object
 chicago_geojson = json.load(open("Chicago.geojson", "r"))
@@ -122,20 +88,9 @@ map=alt.Chart(df).mark_circle().encode(
 
 # combine the above two maps
 st.write(background+map)
+'''
 
-if st.sidebar.checkbox('Show code for Chloropeth Map'):
-    st.code(CodeSnippets.code_snippet_map,language='Python')
-
-
-
-
-
-
-
-
-# a chart showing the number of rides per hour, using different colors for members and casual riders 
-# https://altair-viz.github.io/user_guide/configuration.html
-
+code_snippet_hourchart = '''
 hour_chart = (alt.
   Chart(df).
   mark_line(size=4).
@@ -153,18 +108,8 @@ hour_chart = (alt.
   properties(height=500, width=600))
 
 '''
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-### $~~~~~~~~~~~~~~~~~~~~~~~~~$ Ride Counts by the Hour
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~$This chart shows the count of rides started by the hour of the day, 
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$for members and non-members
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-'''
-# Plot!
-st.altair_chart(hour_chart)
 
-if st.sidebar.checkbox('Show code for Hour Chart'):
-    st.code(CodeSnippets.code_snippet_hourchart,language='Python')
-
+code_snippet_weekdaychart = '''
 weekday_chart = (alt.
   Chart(df).
   mark_line(size=4).
@@ -182,20 +127,11 @@ weekday_chart = (alt.
     order='weekday').
   properties(height=500, width=600))
 
-'''
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-### $~~~~~~~~~~~~~~~~~~~~~~~~~$ Ride Counts by the Day
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~$This chart shows the count of rides started by the day of the week, 
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$for members and non-members
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-'''
-
 st.altair_chart(weekday_chart)
 
-if st.sidebar.checkbox('Show code for Weekday Chart'):
-    st.code(CodeSnippets.code_snippet_weekdaychart,language='Python')
+'''
 
-
+code_snippet_barchart = '''
 bar_chart_ride_counts = alt.Chart(df).mark_bar(size=50).encode(
     x=alt.X('member_casual:N',
     axis=alt.Axis(title="Member vs Casual",titleFontSize=15,titlePadding=15,tickSize=7,tickWidth=5,labelFontSize=15)),
@@ -210,19 +146,10 @@ bar_chart_ride_counts = alt.Chart(df).mark_bar(size=50).encode(
             height=500, 
             width=150)
 
-'''
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-### $~~~~~~~~~~~~~~~$ Ride Counts by Membership and Bike Type
-$~~~~~~~~~~~~~~~~~$ This chart shows the count of rides started by the type of members and the type of bikes
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-'''
-
 st.altair_chart(bar_chart_ride_counts)
+'''
 
-if st.sidebar.checkbox('Show code for Bar Chart'):
-    st.code(CodeSnippets.code_snippet_barchart,language='Python')
-
-
+code_snippet_ride_duration = '''
 bar_chart_ride_duration = alt.Chart(df).mark_line(size=4).encode(
     x=alt.X('weekday:N',
     axis=alt.Axis(title="Day of the Week",titleFontSize=20,titlePadding=15,tickSize=7,tickWidth=5,labelFontSize=15)),
@@ -236,18 +163,5 @@ bar_chart_ride_duration = alt.Chart(df).mark_line(size=4).encode(
             height=500, 
             width=600)
 
-'''
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-### $~~~~~~~~~~~~~~~~~~~~~~~~~~~~$ Avg Ride Durations
-$~~~~$ This chart shows the average ride durations by the day of the week for  members and non-members.
-$~~~~~~~~~~~~~~~~~~~~~~~~~$
-'''
-
 st.altair_chart(bar_chart_ride_duration)
-
-if st.sidebar.checkbox('Show code for Ride Duration Chart'):
-    st.code(CodeSnippets.code_snippet_ride_duration,language='Python')
-
-
-
-
+'''
