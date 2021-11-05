@@ -7,14 +7,16 @@ import json
 import requests
 import random
 import os
-import CodeSnippets
-
+import CodeSnippets # all code snippets are stored in this file 
 
 
 '''
 # $~~~~~$ BikeShare Ride Analysis App 
-This is a very simple app that allows to see some visualisations about a BikeShare Company operating in Chicago , which showcase how the 
-members and non-members differ in their riding patterns.
+
+This app shows some visualisations about a BikeShare Company's ride data, 
+ showcasing how the members and non-members of the company 
+differ in their riding patterns.
+*For details about the data or the code for each section, use the checkboxes in the sidebar*
 '''
 
 #https://towardsdatascience.com/reading-and-writing-files-from-to-amazon-s3-with-pandas-ccaf90bfe86c
@@ -70,12 +72,13 @@ df = load_data()
 # Notify the reader that the data was successfully loaded.
 data_load_state.text('Loading data...done!')
 
+# if reader wants to check the dataframe
 if st.sidebar.checkbox('Show dataframe'):
     st.write(df)
 
 
-
-if st.sidebar.checkbox('Show Code for loading data'):
+# if reader wants to see the code for this section
+if st.sidebar.checkbox('Show code for loading data'):
     st.code(CodeSnippets.code_snippet_data,language='python')
 
 
@@ -123,6 +126,7 @@ map=alt.Chart(df).mark_circle().encode(
 # combine the above two maps
 st.write(background+map)
 
+# if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Chloropeth Map'):
     st.code(CodeSnippets.code_snippet_map,language='Python')
 
@@ -162,8 +166,9 @@ $~~~~~~~~~~~~~~~~~~~~~~~~~$
 # Plot!
 st.altair_chart(hour_chart)
 
+# if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Hour Chart'):
-    st.code(CodeSnippets.code_snippet_hourchart,language='Python')
+    st.code(CodeSnippets.code_snippet_data,language='Python')
 
 weekday_chart = (alt.
   Chart(df).
@@ -192,6 +197,7 @@ $~~~~~~~~~~~~~~~~~~~~~~~~~$
 
 st.altair_chart(weekday_chart)
 
+# if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Weekday Chart'):
     st.code(CodeSnippets.code_snippet_weekdaychart,language='Python')
 
@@ -219,6 +225,7 @@ $~~~~~~~~~~~~~~~~~~~~~~~~~$
 
 st.altair_chart(bar_chart_ride_counts)
 
+# if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Bar Chart'):
     st.code(CodeSnippets.code_snippet_barchart,language='Python')
 
@@ -245,8 +252,9 @@ $~~~~~~~~~~~~~~~~~~~~~~~~~$
 
 st.altair_chart(bar_chart_ride_duration)
 
+# if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Ride Duration Chart'):
-    st.code(CodeSnippets.code_snippet_ride_duration,language='Python')
+   st.code(CodeSnippets.code_snippet_ride_duration,language='Python')
 
 
 
