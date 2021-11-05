@@ -3,51 +3,83 @@ import pandas as pd
 import numpy as np
 import boto3
 import altair as alt
+import json
+from sodapy import Socrata
+
+
+import requests
 import random
 import os
 
 
-st.title('BikeShare Analysis')
+
+'''
+# $~~~~~$ BikeShare Ride Analysis App 
+This is a very simple app that allows to see some visualisations about a BikeShare Company operating in Chicago , which showcase how the 
+members and non-members differ in their riding patterns.
+'''
 
 #https://towardsdatascience.com/reading-and-writing-files-from-to-amazon-s3-with-pandas-ccaf90bfe86c
+
+# store the AWS access keys from the secrets file into variables
 ACCESS_KEY = st.secrets['AWS_ACCESS_KEY_ID']
 SECRET_KEY = st.secrets['AWS_SECRET_ACCESS_KEY']
+
+# use boto3 to connect to S3.
 client = boto3.client('s3', aws_access_key_id=ACCESS_KEY , aws_secret_access_key=SECRET_KEY)
 response = client.get_object(
     Bucket = 'my-streamlit-app-bucket',
     Key = 'cleaned_df_sample.csv'
 )
 
+# function to load data into a pandas dataframe and apply some trasnformations that will be required later.
 @st.cache(allow_output_mutation=True)
 def load_data():
     
-    data = pd.read_csv(response.get('Body'))
-   
+    df = pd.read_csv(response.get('Body'))
     lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data['started_at'] = pd.to_datetime(data['started_at'])
-    data['ended_at'] = pd.to_datetime(data['ended_at'])
-    data.rename(columns={"start_lat":"lat","start_lng":"lon"},inplace=True)
+    df.rename(lowercase, axis='columns', inplace=True)
+    df['started_at'] = pd.to_datetime(df['started_at'])
+    df['ended_at'] = pd.to_datetime(df['ended_at'])
+    df.rename(columns={"start_lat":"lat","start_lng":"lon"},inplace=True)
 
-    return data
+    return df
 
 # Create a text element and let the reader know the data is loading.
 data_load_state = st.text('Loading data...')
-# Load 10,000 rows of data into the dataframe.
-data = load_data()
+# Load  data into the dataframe.
+df = load_data()
 # Notify the reader that the data was successfully loaded.
 data_load_state.text('Loading data...done!')
 
-st.subheader('Raw data')
-st.write(data)
+# if checkbox is selected, display data 
+if st.checkbox('Show dataframe'):
+    st.write(df)
 
 
-# data['member_casual'] = data['member_casual'].astype(str)
 
-st.subheader('Map of the starting locations')
+'''
+### $~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$ Location Map 
+This map shows the locations from where the rides were started with different markers for members and non-members
 
-# st.map(data,zoom=9,hue='member_casual')
-map=alt.Chart(data).mark_circle().encode(
+'''
+# def download_json():
+#     '''Downloads ANC JSON from Open Data DC'''
+#     url = './Chicago.geojson'
+#     resp = requests.get(url)
+#     return resp.json
+chicago_geojson = json.load(open("Chicago.geojson", "r"))
+# chicago_geojson
+background = alt.Chart(alt.Data(values=chicago_geojson['features'])).mark_geoshape(
+        stroke='white',
+        fill='lightblue'
+    ).encode(
+    ).properties(
+        width=700,
+        height=500
+    )
+
+map=alt.Chart(df).mark_circle().encode(
     longitude='lon:Q',
     latitude='lat:Q',
     size=alt.value(20),
@@ -56,24 +88,24 @@ map=alt.Chart(data).mark_circle().encode(
 ).project(
     "albersUsa"
 ).properties(
-    width=600,
+    width=700,
     height=500
 )
 
-st.altair_chart(map)
+st.write(background+map)
 
-st.subheader("No of rides by the hour")
+
 
 # Add weekday and hours column to the dataframe
 
 dayOfWeek={0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
-data['weekday'] = data['started_at'].dt.dayofweek.map(dayOfWeek)
+df['weekday'] = df['started_at'].dt.dayofweek.map(dayOfWeek)
 
 
-data['hour_of_the_day'] = data['started_at'].dt.hour
+df['hour_of_the_day'] = df['started_at'].dt.hour
 
 chart = (alt.
-  Chart(data).
+  Chart(df).
   mark_line(size=4).
   encode(x=alt.X(
     'hour_of_the_day:N',
