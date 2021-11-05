@@ -4,9 +4,9 @@ import numpy as np
 import boto3
 import altair as alt
 import json
-import requests
-import random
-import os
+
+
+
 import CodeSnippets # all code snippets are stored in this file 
 
 
