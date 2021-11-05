@@ -4,9 +4,6 @@ import numpy as np
 import boto3
 import altair as alt
 import json
-from sodapy import Socrata
-
-
 import requests
 import random
 import os
