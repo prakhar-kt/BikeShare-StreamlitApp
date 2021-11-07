@@ -168,7 +168,7 @@ st.altair_chart(hour_chart)
 
 # if reader wants to see the code for this section
 if st.sidebar.checkbox('Show code for Hour Chart'):
-    st.code(CodeSnippets.code_snippet_data,language='Python')
+    st.code(CodeSnippets.code_snippet_hourchart,language='Python')
 
 weekday_chart = (alt.
   Chart(df).
